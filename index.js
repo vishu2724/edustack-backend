@@ -20,6 +20,10 @@ app.use(express.json());
 const userrouter = require("./routes/user");
 const courserouter = require("./routes/courses");
 const adminrouter = require("./routes/admin");
+app.get("/", (req, res) => {
+    res.send("Edustack Backend is running 🚀");
+  });
+  
 
 app.use("/user", userrouter);
 app.use("/courses", courserouter);
