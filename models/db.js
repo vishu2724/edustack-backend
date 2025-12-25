@@ -1,8 +1,15 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.ObjectId;
-mongoose.connect("mongodb://127.0.0.1:27017/course_app")
+// 🔥 IMPORTANT: Render / Production ke liye
+const MONGO_URL = process.env.MONGO_URL;
+
+mongoose
+  .connect(MONGO_URL)
   .then(() => console.log("✅ MongoDB Connected"))
+  .catch((err) => {
+    console.error("❌ MongoDB connection error:", err.message);
+  });
 
 const userSchema = new Schema({
     firstName : String,
