@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const ObjectId = mongoose.ObjectId;
+const ObjectId = mongoose.Schema.Types.ObjectId;
 // 🔥 IMPORTANT: Render / Production ke liye
-const MONGO_URL = process.env.MONGO_URL;
+const MONGO_URL = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO_URL)

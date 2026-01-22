@@ -6,9 +6,11 @@ const app = express();
 const cors = require("cors");
 const mongoose = require("./models/db");
 
+// change ##########################
 app.use(cors({
-    origin: "http://localhost:5173"
+  origin: "*"
 }));
+
 
 const port = process.env.PORT || 3000;
 
@@ -29,4 +31,7 @@ app.use("/user", userrouter);
 app.use("/courses", courserouter);
 app.use("/admin", adminrouter);
 
-app.listen(port);
+app.listen(port, () => {
+  console.log(`Server running on port ${port}`);
+});
+
