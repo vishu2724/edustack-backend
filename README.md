@@ -1,4 +1,5 @@
 # EduStack – Course Selling Platform (Backend)
+A scalable Node.js backend for a course selling platform featuring JWT authentication, role-based access control, and MongoDB Atlas integration.
 
 This repository contains the **backend** of the full-stack **EduStack – Course Selling Platform**, built using **Node.js, Express.js, and MongoDB**.
 
