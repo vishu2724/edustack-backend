@@ -23,7 +23,7 @@ const userrouter = require("./routes/user");
 const courserouter = require("./routes/courses");
 const adminrouter = require("./routes/admin");
 app.get("/", (req, res) => {
-    res.send("Edustack Backend is running 🚀");
+    res.send("Edustack Backend is running ");
   });
   
 
