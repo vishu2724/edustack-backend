@@ -1,14 +1,14 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 const ObjectId = mongoose.Schema.Types.ObjectId;
-// 🔥 IMPORTANT: Render / Production ke liye
+
 const MONGO_URL = process.env.MONGO_URI;
 
 mongoose
   .connect(MONGO_URL)
-  .then(() => console.log("✅ MongoDB Connected"))
+  .then(() => console.log(" MongoDB Connected"))
   .catch((err) => {
-    console.error("❌ MongoDB connection error:", err.message);
+    console.error(" MongoDB connection error:", err.message);
   });
 
 const userSchema = new Schema({
