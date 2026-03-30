@@ -6,15 +6,8 @@ const {JWT_ADMIN_PASSWORD} = require("../config");
 
 // Define the adminMiddleware function to verify the admin token
 function adminMiddleware(req,res,next){
-    const authHeader = req.headers.authorization; // ✅ FIX
-
-    if (!authHeader) {
-        return res.status(401).json({
-            message: "Token missing"
-        });
-    }
     // Retrieve the authorization token from the request headers
-    const token = authHeader.split(" ")[1];
+    const token = req.headers.token;
 
     // Use a try-catch block to handle errors that may occur during token verification
     try{
