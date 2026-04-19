@@ -5,7 +5,7 @@ This repository contains the **backend** of the full-stack **EduStack – Course
 
 ## 🔗 Related Links
 - **Frontend Repository:** https://github.com/vishu2724/edustack-frontend
-- **Live Application:** https://edustack-frontend-seven.vercel.app/
+- **Live Application:** https://edustack-solution.vercel.app/
 
 ## 🚀 Tech Stack
 - Node.js
