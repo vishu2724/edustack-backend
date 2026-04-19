@@ -1,6 +1,8 @@
 const express = require("express");
 const adminrouter = express.Router();
 const {adminModel, courseModel} = require("../models/db")
+const { moduleModel } = require("../models/db");
+const { lectureModel } = require("../models/db");
 
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
@@ -37,7 +39,7 @@ adminrouter.post("/signup", async (req, res) => {
     const { email, password, firstName, lastName } = req.body;
 
     try {
-        const hashedpassword = await bcrypt.hash(password, 10); // ✅ better salt
+        const hashedpassword = await bcrypt.hash(password, 10); 
 
         await adminModel.create({
             email,
@@ -269,5 +271,47 @@ adminrouter.delete("/course/:id", adminMiddleware, async (req, res) => {
     }
 });
 
+
+adminrouter.put("/module", adminMiddleware, async (req, res) => {
+    const { moduleId, title } = req.body;
+
+    if (!moduleId) {
+        return res.status(400).json({
+            message: "moduleId required"
+        });
+    }
+
+    const updated = await moduleModel.findByIdAndUpdate(
+        moduleId,
+        { title },
+        { new: true }
+    );
+
+    res.json({
+        message: "Module updated",
+        module: updated
+    });
+});
+
+adminrouter.put("/lecture", adminMiddleware, async (req, res) => {
+    const { lectureId, title, videoUrl } = req.body;
+
+    if (!lectureId) {
+        return res.status(400).json({
+            message: "lectureId required"
+        });
+    }
+
+    const updated = await lectureModel.findByIdAndUpdate(
+        lectureId,
+        { title, videoUrl },
+        { new: true }
+    );
+
+    res.json({
+        message: "Lecture updated",
+        lecture: updated
+    });
+});
 
 module.exports = adminrouter;

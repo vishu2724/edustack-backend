@@ -38,17 +38,33 @@ const purchaseSchema = new Schema({
     courseId : ObjectId
 });
 
+const moduleSchema = new Schema({
+    courseId : ObjectId,
+    title : String,
+    orderIndex : Number
+});
+
+const lectureSchema = new Schema({
+    moduleId : ObjectId,
+    title : String, 
+    videoUrl : String,
+    orderIndex : Number
+});
+
 const userModel = mongoose.model("user",userSchema);
 const adminModel = mongoose.model("admin",adminSchema);
 const courseModel = mongoose.model("course",coursesSchema);
 const purchaseModel = mongoose.model("purchase",purchaseSchema);
+const moduleModel = mongoose.model("module",moduleSchema);
+const lectureModel = mongoose.model("lecture",lectureSchema);   
 
 module.exports= {
     userModel,
     adminModel,
     courseModel,
-    purchaseModel
-}
+    purchaseModel,
+    moduleModel,
+    lectureModel}
 
 
 
