@@ -314,4 +314,121 @@ adminrouter.put("/lecture", adminMiddleware, async (req, res) => {
     });
 });
 
+adminrouter.put("/course/:id/full", adminMiddleware, async (req, res) => {
+    try {
+        const adminId = req.adminId;
+        const courseId = req.params.id;
+        const { title, description, imageUrl, price, modules = [] } = req.body;
+
+        if (!courseId) {
+            return res.status(400).json({ message: "courseId is required" });
+        }
+
+        const course = await courseModel.findOne({
+            _id: courseId,
+            creatorId: adminId
+        });
+
+        if (!course) {
+            return res.status(404).json({
+                message: "Course not found or unauthorized"
+            });
+        }
+
+        await courseModel.updateOne(
+            { _id: courseId },
+            {
+                title,
+                description,
+                imageUrl,
+                price
+            }
+        );
+
+        const existingModules = await moduleModel.find({ courseId });
+        const existingModuleIds = new Set(existingModules.map((mod) => String(mod._id)));
+        const incomingModuleIds = new Set(
+            modules
+                .filter((mod) => mod?._id)
+                .map((mod) => String(mod._id))
+        );
+
+        const moduleIdsToDelete = existingModules
+            .filter((mod) => !incomingModuleIds.has(String(mod._id)))
+            .map((mod) => mod._id);
+
+        if (moduleIdsToDelete.length > 0) {
+            await lectureModel.deleteMany({ moduleId: { $in: moduleIdsToDelete } });
+            await moduleModel.deleteMany({ _id: { $in: moduleIdsToDelete } });
+        }
+
+        for (let i = 0; i < modules.length; i++) {
+            const incomingModule = modules[i];
+            const moduleTitle = incomingModule.moduleTitle ?? incomingModule.title ?? "";
+            let currentModuleId = incomingModule._id;
+
+            if (currentModuleId && existingModuleIds.has(String(currentModuleId))) {
+                await moduleModel.updateOne(
+                    { _id: currentModuleId, courseId },
+                    { title: moduleTitle, orderIndex: i + 1 }
+                );
+            } else {
+                const createdModule = await moduleModel.create({
+                    courseId,
+                    title: moduleTitle,
+                    orderIndex: i + 1
+                });
+                currentModuleId = createdModule._id;
+            }
+
+            const lectures = Array.isArray(incomingModule.lectures) ? incomingModule.lectures : [];
+            const existingLectures = await lectureModel.find({ moduleId: currentModuleId });
+            const existingLectureIds = new Set(existingLectures.map((lec) => String(lec._id)));
+            const incomingLectureIds = new Set(
+                lectures
+                    .filter((lec) => lec?._id)
+                    .map((lec) => String(lec._id))
+            );
+
+            const lectureIdsToDelete = existingLectures
+                .filter((lec) => !incomingLectureIds.has(String(lec._id)))
+                .map((lec) => lec._id);
+
+            if (lectureIdsToDelete.length > 0) {
+                await lectureModel.deleteMany({ _id: { $in: lectureIdsToDelete } });
+            }
+
+            for (let j = 0; j < lectures.length; j++) {
+                const incomingLecture = lectures[j];
+                const lectureTitle = incomingLecture.title ?? "";
+                const lectureVideoUrl = incomingLecture.videoUrl ?? "";
+
+                if (incomingLecture._id && existingLectureIds.has(String(incomingLecture._id))) {
+                    await lectureModel.updateOne(
+                        { _id: incomingLecture._id, moduleId: currentModuleId },
+                        { title: lectureTitle, videoUrl: lectureVideoUrl, orderIndex: j + 1 }
+                    );
+                } else {
+                    await lectureModel.create({
+                        moduleId: currentModuleId,
+                        title: lectureTitle,
+                        videoUrl: lectureVideoUrl,
+                        orderIndex: j + 1
+                    });
+                }
+            }
+        }
+
+        return res.json({
+            message: "Course, modules, and lectures synced successfully"
+        });
+    } catch (error) {
+        console.log("Full course sync error:", error);
+        return res.status(500).json({
+            message: "Server error",
+            error: error.message
+        });
+    }
+});
+
 module.exports = adminrouter;
